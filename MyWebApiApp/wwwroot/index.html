@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>User List</h1>
+    <ul id="userList" class="user-list"></ul>
+    <input type="text" id="newUser" placeholder="Enter a new user" />
+    <button onclick="addUser()">Add User</button>
+
+    <script>
+        async function loadUsers() {
+            const response = await fetch('/api/users');
+            const users = await response.json();
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.classList.add('user-item');
+                li.textContent = user.name;
+                userList.appendChild(li);
+            });
+        }
+
+        async function addUser() {
+            const newUser = document.getElementById('newUser').value;
+            if (newUser) {
+                await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ Name: newUser })
+                });
+                loadUsers();
+                document.getElementById('newUser').value = ''; // Clear input
+            }
+        }
+
+        loadUsers(); // Initial load
+    </script>
+</body>
+</html>
